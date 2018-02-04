@@ -69,6 +69,8 @@ time conda install -n pandas pytest>=3.1.0 || exit 1
 source activate pandas
 time pip install moto || exit 1
 
+export CFLAGS='-Wl,-strip-all -flto'
+export CXXFLAGS="$CFLAGS"
 # build but don't install
 echo "[build em]"
 time python setup.py build_ext --inplace || exit 1
