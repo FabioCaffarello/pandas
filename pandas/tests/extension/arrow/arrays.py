@@ -7,6 +7,7 @@ multiple dtypes. Not all methods are implemented yet, and the
 current implementation is not efficient.
 """
 import copy
+import datetime
 import itertools
 import operator
 from typing import Type
@@ -65,6 +66,26 @@ class ArrowStringDtype(ExtensionDtype):
         type
         """
         return ArrowStringArray
+
+
+@register_extension_dtype
+class ArrowTimestampUSDtype(ExtensionDtype):
+
+    type = datetime.datetime
+    kind = "M"
+    name = "arrow_timestamp_us"
+    na_value = pa.NULL
+
+    @classmethod
+    def construct_array_type(cls) -> Type["ArrowTimestampUSArray"]:
+        """
+        Return the array type associated with this dtype.
+
+        Returns
+        -------
+        type
+        """
+        return ArrowTimestampUSArray
 
 
 class ArrowExtensionArray(ExtensionArray):
@@ -201,3 +222,13 @@ class ArrowStringArray(ArrowExtensionArray):
         assert values.type == pa.string()
         self._data = values
         self._dtype = ArrowStringDtype()
+
+
+class ArrowTimestampUSArray(ArrowExtensionArray):
+    def __init__(self, values):
+        if not isinstance(values, pa.ChunkedArray):
+            raise ValueError
+
+        assert values.type == pa.timestamp("us")
+        self._data = values
+        self._dtype = ArrowTimestampUSDtype()
