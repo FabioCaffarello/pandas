@@ -9,6 +9,9 @@ pytest.importorskip("pyarrow", minversion="0.13.0")
 from .arrays import ArrowTimestampUSArray  # isort:skip
 
 
+@pytest.mark.xfail(
+    reason="DatetimeTZBlock is created while ExtensionBlock should be, see #34986"
+)
 def test_constructor_extensionblock():
     # GH 34986
     pd.DataFrame(
